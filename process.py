@@ -74,7 +74,7 @@ def calculate_student_goals(df: pd.DataFrame) -> dict[str, list[dict]]:
     return results
 
 
-def write_excel(results: dict[str, list[dict]], output_path: str) -> None:
+def write_excel(results: dict[str, list[dict]], output_path: str, raw_df: pd.DataFrame = None) -> None:
     os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
     wb = openpyxl.Workbook()
     wb.remove(wb.active)  # remove default sheet
@@ -125,10 +125,26 @@ def write_excel(results: dict[str, list[dict]], output_path: str) -> None:
 
         ws.freeze_panes = "B2"
 
+    # Raw data tab
+    if raw_df is not None:
+        ws = wb.create_sheet("Data")
+        # Header row
+        for col_idx, col_name in enumerate(raw_df.columns, start=1):
+            cell = ws.cell(row=1, column=col_idx, value=col_name)
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.alignment = center_align
+            ws.column_dimensions[get_column_letter(col_idx)].width = 18
+        # Data rows
+        for row_idx, row in enumerate(raw_df.itertuples(index=False), start=2):
+            for col_idx, value in enumerate(row, start=1):
+                ws.cell(row=row_idx, column=col_idx, value=value)
+        ws.freeze_panes = "A2"
+
     wb.save(output_path)
 
 
 def process_report(input_path: str, output_path: str) -> None:
     df = pd.read_excel(input_path)
     results = calculate_student_goals(df)
-    write_excel(results, output_path)
+    write_excel(results, output_path, raw_df=df)
