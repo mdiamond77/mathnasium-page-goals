@@ -37,6 +37,14 @@ jobs:
           GOOGLE_DRIVE_CREDENTIALS: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
         run: python main.py --trigger auto
 
+      - name: Upload output file as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: page-goals-output
+          path: output/
+          if-no-files-found: ignore
+
       - name: Commit run log
         if: always()
         run: |

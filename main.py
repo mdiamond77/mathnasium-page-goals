@@ -8,7 +8,7 @@ Usage:
 import argparse
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 
 from config import SUCCESS_RECIPIENTS, ERROR_RECIPIENTS, OUTPUT_DIR
@@ -22,33 +22,37 @@ SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
 GOOGLE_DRIVE_CREDENTIALS = os.environ.get("GOOGLE_DRIVE_CREDENTIALS", "")
 
 
-def parse_month(month_str: str | None):
+def parse_goal_month(month_str: str | None) -> datetime:
     if month_str:
         return datetime.strptime(month_str, "%Y-%m")
-    # Default: previous month
-    return datetime.now() - relativedelta(months=1)
+    return datetime.now()  # default: current month
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--month", help="Month to process (YYYY-MM), defaults to previous month")
+    parser.add_argument("--month", help="Goal month (YYYY-MM), defaults to current month")
     parser.add_argument("--trigger", default="manual", choices=["auto", "manual"])
     args = parser.parse_args()
 
-    data_month = parse_month(args.month)
-    # Goals apply to the current month (month after data_month)
-    goal_month = data_month + relativedelta(months=1)
-    month_name = goal_month.strftime("%B")  # e.g. "May"
-    month_key = data_month.strftime("%Y-%m")  # e.g. "2026-04"
+    goal_month = parse_goal_month(args.month)
+    month_name = goal_month.strftime("%B")   # e.g. "May"
+    month_key = goal_month.strftime("%Y-%m") # e.g. "2026-05"
+
+    # For reruns (--month specified), pull 90 days ending the last day of the previous month
+    # For current runs, pull 90 days ending today
+    if args.month:
+        as_of_date = (goal_month.replace(day=1) - relativedelta(days=1)).date()
+    else:
+        as_of_date = date.today()
 
     output_filename = f"{month_name} Page Goals.xlsx"
     output_path = os.path.join(OUTPUT_DIR, output_filename)
 
-    print(f"[main] Processing {month_name} page goals (data from {data_month.strftime('%B %Y')})")
+    print(f"[main] Processing {month_name} page goals (90 days ending {as_of_date})")
 
     try:
         # 1. Download
-        input_path = download_dwp_report(data_month)
+        input_path = download_dwp_report(as_of_date)
 
         # 2. Process
         process_report(input_path, output_path)

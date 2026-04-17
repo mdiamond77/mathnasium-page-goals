@@ -16,10 +16,9 @@ from config import RADIUS_LOGIN_URL, RADIUS_DWP_URL, INPUT_DIR
 CENTER_VALUES = ["2428", "2871"]
 
 
-def download_dwp_report(data_month: date) -> str:
+def download_dwp_report(as_of_date: date) -> str:
     """
-    Download the Digital Workout Plan report for the given month.
-    data_month: first day of the month to download.
+    Download the Digital Workout Plan report for the 90 days ending on as_of_date.
     Returns the local path to the downloaded file.
     """
     username = os.environ.get("RADIUS_USERNAME")
@@ -30,12 +29,11 @@ def download_dwp_report(data_month: date) -> str:
     os.makedirs(INPUT_DIR, exist_ok=True)
     output_path = os.path.join(
         INPUT_DIR,
-        f"Digital_Workout_Plan_{data_month.strftime('%Y_%m')}.xlsx"
+        f"Digital_Workout_Plan_90day_{as_of_date.strftime('%Y_%m_%d')}.xlsx"
     )
 
-    start = data_month.replace(day=1)
-    # Last day of month
-    end = (data_month + relativedelta(months=1)) - relativedelta(days=1)
+    end = as_of_date
+    start = end - relativedelta(days=90)
 
     # Render JS array from CENTER_VALUES constant
     center_values_js = json.dumps(CENTER_VALUES)
