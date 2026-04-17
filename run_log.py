@@ -1,8 +1,9 @@
 import json
 import os
+import pathlib
 from datetime import datetime, timezone
 
-RUN_LOG_PATH = "run_log.json"
+RUN_LOG_PATH = str(pathlib.Path(__file__).parent / "run_log.json")
 
 
 def read_log() -> list[dict]:
