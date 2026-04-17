@@ -44,7 +44,12 @@ def send_email(
         msg["To"] = ", ".join(recipients)
     else:
         subject = f"{month_name} Page Goals"
-        body = f"Please find attached the {month_name} page goals report."
+        body = (
+            f"Good morning Mathnasium Center Directors!\n\n"
+            f"Attached is the latest page goal updates for your students. "
+            f"Please have your instructors update the binders at each student's next session.\n\n"
+            f"Thanks and have a great day!!"
+        )
         msg = MIMEMultipart()
         msg["Subject"] = subject
         msg["From"] = smtp_user
