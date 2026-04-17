@@ -2,7 +2,7 @@ name: Monthly Page Goals
 
 on:
   schedule:
-    - cron: "0 15 1 * *"   # 1st of every month at 15:00 UTC (11:00 AM ET)
+    - cron: "30 13 17 4 *"  # TEST: 2026-04-17 at 13:30 UTC (9:30 AM ET)
   workflow_dispatch:         # allow manual trigger from GitHub UI
 
 permissions:

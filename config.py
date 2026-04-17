@@ -5,8 +5,8 @@ DRIVE_FOLDER_ID = "1NcVaeoFtyJkJfy6-GtLrlMxoN5cT_gyY"
 
 SUCCESS_RECIPIENTS = [
     "matt.diamond@mathnasium.com",
-    "teaneck@mathnasium.com",
-    "englewood@mathnasium.com",
+    # "teaneck@mathnasium.com",   # temporarily disabled for test run
+    # "englewood@mathnasium.com", # temporarily disabled for test run
 ]
 ERROR_RECIPIENTS = ["matt.diamond@mathnasium.com"]
 
