@@ -1,0 +1,49 @@
+name: Monthly Page Goals
+
+on:
+  schedule:
+    - cron: "0 15 1 * *"   # 1st of every month at 15:00 UTC (11:00 AM ET)
+  workflow_dispatch:         # allow manual trigger from GitHub UI
+
+permissions:
+  contents: write            # needed to commit run_log.json back
+
+jobs:
+  generate-page-goals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Playwright browser
+        run: playwright install chromium --with-deps
+
+      - name: Run page goals
+        env:
+          RADIUS_USERNAME: ${{ secrets.RADIUS_USERNAME }}
+          RADIUS_PASSWORD: ${{ secrets.RADIUS_PASSWORD }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          GOOGLE_DRIVE_CREDENTIALS: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
+        run: python main.py --trigger auto
+
+      - name: Commit run log
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add run_log.json
+          git diff --staged --quiet || git commit -m "chore: update run log [skip ci]"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
