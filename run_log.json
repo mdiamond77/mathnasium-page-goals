@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "timestamp": "2026-04-17T13:33:43Z",
+    "trigger": "auto",
+    "month": "2026-03",
+    "status": "error",
+    "output_file": null,
+    "drive_link": null,
+    "error": "(534, b'5.7.9 Application-specific password required. For more information, go to\\n5.7.9  https://support.google.com/mail/?p=InvalidSecondFactor d75a77b69052e-50e39305285sm14105721cf.13 - gsmtp')"
+  }
+]
