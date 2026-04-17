@@ -29,6 +29,7 @@ def calculate_student_goals(df: pd.DataFrame) -> dict[str, list[dict]]:
 
     # Assign center
     def assign_center(center_str: str) -> str | None:
+        # Englewood is checked first — "Englewood, Teaneck Virtual" routes to Englewood
         if "Englewood" in str(center_str):
             return "Englewood"
         if "Teaneck" in str(center_str):
@@ -51,6 +52,8 @@ def calculate_student_goals(df: pd.DataFrame) -> dict[str, list[dict]]:
 
         average = round(sum(pages_oldest_first) / num_sessions, 2)
         max_pages = max(pages_oldest_first)
+        # Goal is 20% above average, capped just below the student's personal best
+        # (max - 0.01 keeps the goal achievable — always something to reach for)
         goal = round(min(average * 1.20, max_pages - 0.01), 2)
 
         # Pad to 10 with None (left-pad: Nones go in early session slots)

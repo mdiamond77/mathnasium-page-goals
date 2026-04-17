@@ -59,7 +59,7 @@ def test_goal_capped_below_max():
     assert student["goal"] == 9.99
 
 
-def test_goal_capped_when_120pct_exceeds_max():
+def test_goal_uncapped_when_120pct_is_below_max():
     # sessions: 5,5,5,5,5,10,10,10,10,10 → avg=7.5, 120%=9.0, max=10, goal=9.0
     # (120% of avg = 9.0 < max-0.01 = 9.99, so goal = 9.0, no cap applied)
     pages = [5] * 5 + [10] * 5
@@ -164,3 +164,22 @@ def test_students_sorted_alphabetically():
     results = calculate_student_goals(df)
     names = [s["name"] for s in results["Teaneck"]]
     assert names == sorted(names)
+
+
+def test_write_excel_creates_file_with_correct_sheets(tmp_path):
+    import openpyxl
+    results = {
+        "Englewood": [
+            {"name": "Alice", "num_sessions": 2, "sessions": [None]*8 + [5.0, 6.0], "average": 5.5, "goal": 5.49}
+        ],
+        "Teaneck": [],
+    }
+    out = str(tmp_path / "test_output.xlsx")
+    from process import write_excel
+    write_excel(results, out)
+    wb = openpyxl.load_workbook(out)
+    assert wb.sheetnames == ["Englewood", "Teaneck"]
+    ws = wb["Englewood"]
+    assert ws.cell(1, 1).value == "Student Name"
+    assert ws.cell(2, 1).value == "Alice"
+    assert ws.cell(1, 14).value == "Page Goal"
