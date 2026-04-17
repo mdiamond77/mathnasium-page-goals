@@ -1,6 +1,5 @@
 RADIUS_LOGIN_URL = "https://radius.mathnasium.com"
-# RADIUS_DWP_URL filled in during Task 3 (Radius investigation)
-RADIUS_DWP_URL = ""
+RADIUS_DWP_URL = "https://radius.mathnasium.com/DigitalWorkoutPlan/Report"
 
 DRIVE_FOLDER_ID = "1NcVaeoFtyJkJfy6-GtLrlMxoN5cT_gyY"
 
